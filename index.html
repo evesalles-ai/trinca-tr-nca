@@ -232,23 +232,14 @@
         const INITIAL_JOAO = rawJoao[0];
         const INITIAL_CAROLINA = rawCarolina[0];
         
-        // Parse games from alternating data
+        // Parse games from alternating data (defaults)
         const defaultGames = [];
         for (let i = 1; i < rawJoao.length; i += 2) {
             defaultGames.push({ joao: rawJoao[i], carolina: rawCarolina[i] });
         }
         
-        // Load from localStorage or use default
+        // Use default games - localStorage is cleared for fresh start
         let games = defaultGames;
-        const saved = localStorage.getItem('trincaGames');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed && parsed.length > 0) {
-                    games = parsed;
-                }
-            } catch(e) {}
-        }
         
         function saveGames() {
             localStorage.setItem('trincaGames', JSON.stringify(games));
