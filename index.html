@@ -238,7 +238,8 @@
             defaultGames.push({ joao: rawJoao[i], carolina: rawCarolina[i] });
         }
         
-        // Use default games - localStorage is cleared for fresh start
+        // Use default games - clear any old localStorage
+        localStorage.removeItem('trincaGames');
         let games = defaultGames;
         
         function saveGames() {
