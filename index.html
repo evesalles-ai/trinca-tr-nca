@@ -65,7 +65,7 @@
             letter-spacing: 2px;
         }
         .score-card .score {
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: bold;
             word-break: break-word;
             line-height: 1.2;
@@ -274,29 +274,27 @@
     </div>
     
     <script>
-        // Initial totals (starting scores)
-        const INITIAL_JOAO = 14730;
-        const INITIAL_CAROLINA = 16800;
+        // Initial data - alternating: total, then game score
+        // João: 14730(total), +760, 15490(total), +640, 16130(total), +1250...
+        const rawJoao = [14730, 760, 15490, 640, 16130, 1250, 17380, -350, 17030, 1050, 18080, 290, 18370, 600, 18970, 240, 19210, 1200, 20410, 260, 20630, 680, 21310, 1120, 22430, 870, 23300];
+        const rawCarolina = [16800, 1200, 18000, 50, 18050, 690, 18740, 470, 19210, 1150, 20360, 690, 21050, 1100, 22150, 880, 23030, 690, 23720, 630, 24350, -330, 24020, 750, 24770, 650, 25420];
         
-        // Game results only (the +xxx or -xxx values)
-        const initialGames = [
-            { joao: 760, carolina: 1200 },
-            { joao: 640, carolina: 50 },
-            { joao: 1250, carolina: 690 },
-            { joao: -350, carolina: 470 },
-            { joao: 1050, carolina: 1150 },
-            { joao: 290, carolina: 690 },
-            { joao: 600, carolina: 1100 },
-            { joao: 240, carolina: 880 },
-            { joao: 1200, carolina: 690 },
-            { joao: 260, carolina: 630 },
-            { joao: 680, carolina: -330 },
-            { joao: 1120, carolina: 750 },
-            { joao: 870, carolina: 650 },
-        ];
+        // Extract just the game scores (the +xxx values, not the totals)
+        // Every other value starting from index 1 is the game score
+        let games = JSON.parse(localStorage.getItem('trincaGames'));
         
-        // Load from localStorage or use initial data
-        let games = JSON.parse(localStorage.getItem('trincaGames')) || initialGames;
+        if (!games) {
+            games = [];
+            for (let i = 1; i < rawJoao.length; i += 2) {
+                games.push({
+                    joao: rawJoao[i],
+                    carolina: rawCarolina[i]
+                });
+            }
+        }
+        
+        const INITIAL_JOAO = rawJoao[0]; // 14730
+        const INITIAL_CAROLINA = rawCarolina[0]; // 16800
         
         function saveGames() {
             localStorage.setItem('trincaGames', JSON.stringify(games));
