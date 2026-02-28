@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tranca TR NCA</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@v4.4.1/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -138,11 +138,11 @@
         <div class="scores">
             <div class="score-card joao">
                 <h2>João</h2>
-                <div class="score" id="joaoScore">-</div>
+                <div class="score" id="joaoScore">23.300</div>
             </div>
             <div class="score-card carolina">
                 <h2>Carolina</h2>
-                <div class="score" id="carolinaScore">-</div>
+                <div class="score" id="carolinaScore">25.420</div>
             </div>
         </div>
         
@@ -158,15 +158,15 @@
         <div class="stats">
             <div class="stat-card">
                 <h4>Jogos</h4>
-                <div class="value" id="totalGames">0</div>
+                <div class="value" id="totalGames">13</div>
             </div>
             <div class="stat-card">
                 <h4>Maior Vitória João</h4>
-                <div class="value win" id="joaoBiggestWin">0</div>
+                <div class="value win" id="joaoBiggestWin">+1.250</div>
             </div>
             <div class="stat-card">
                 <h4>Maior Vitória Carolina</h4>
-                <div class="value win" id="carolinaBiggestWin">0</div>
+                <div class="value win" id="carolinaBiggestWin">+1.200</div>
             </div>
         </div>
         
@@ -180,19 +180,29 @@
                 <thead>
                     <tr><th>#</th><th>João</th><th>Carolina</th><th>Vencedor</th></tr>
                 </thead>
-                <tbody id="historyBody"></tbody>
+                <tbody id="historyBody">
+                    <tr><td>1</td><td class="joao">+760</td><td class="carolina">+1.200</td><td>Carolina</td></tr>
+                    <tr><td>2</td><td class="joao">+640</td><td class="carolina">+50</td><td>João</td></tr>
+                    <tr><td>3</td><td class="joao">+1.250</td><td class="carolina">+690</td><td>João</td></tr>
+                    <tr><td>4</td><td class="joao">-350</td><td class="carolina">+470</td><td>Carolina</td></tr>
+                    <tr><td>5</td><td class="joao">+1.050</td><td class="carolina">+1.150</td><td>Carolina</td></tr>
+                    <tr><td>6</td><td class="joao">+290</td><td class="carolina">+690</td><td>Carolina</td></tr>
+                    <tr><td>7</td><td class="joao">+600</td><td class="carolina">+1.100</td><td>Carolina</td></tr>
+                    <tr><td>8</td><td class="joao">+240</td><td class="carolina">+880</td><td>Carolina</td></tr>
+                    <tr><td>9</td><td class="joao">+1.200</td><td class="carolina">+690</td><td>João</td></tr>
+                    <tr><td>10</td><td class="joao">+260</td><td class="carolina">+630</td><td>Carolina</td></tr>
+                    <tr><td>11</td><td class="joao">+680</td><td class="carolina">-330</td><td>João</td></tr>
+                    <tr><td>12</td><td class="joao">+1.120</td><td class="carolina">+750</td><td>João</td></tr>
+                    <tr><td>13</td><td class="joao">+870</td><td class="carolina">+650</td><td>João</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
     
     <script>
-        console.log('Script starting...');
-        
-        // Starting totals
         const INITIAL_JOAO = 14730;
         const INITIAL_CAROLINA = 16800;
         
-        // Game scores (the +xxx values)
         const gameData = [
             { joao: 760, carolina: 1200 },
             { joao: 640, carolina: 50 },
@@ -209,76 +219,25 @@
             { joao: 870, carolina: 650 }
         ];
         
-        console.log('Initial totals:', INITIAL_JOAO, INITIAL_CAROLINA);
-        console.log('Games:', gameData.length);
-        
         function getTotals() {
             let j = INITIAL_JOAO;
             let c = INITIAL_CAROLINA;
-            gameData.forEach(g => {
-                j += g.joao;
-                c += g.carolina;
-            });
+            gameData.forEach(g => { j += g.joao; c += g.carolina; });
             return { joao: j, carolina: c };
         }
         
-        function render() {
-            const totals = getTotals();
-            console.log('Totals:', totals);
-            
-            document.getElementById('joaoScore').textContent = totals.joao.toLocaleString();
-            document.getElementById('carolinaScore').textContent = totals.carolina.toLocaleString();
-            document.getElementById('totalGames').textContent = gameData.length;
-            
-            // Biggest wins
-            let jWin = 0, cWin = 0;
-            gameData.forEach(g => {
-                if (g.joao > g.carolina) jWin = Math.max(jWin, g.joao - g.carolina);
-                if (g.carolina > g.joao) cWin = Math.max(cWin, g.carolina - g.joao);
-            });
-            document.getElementById('joaoBiggestWin').textContent = '+' + jWin;
-            document.getElementById('carolinaBiggestWin').textContent = '+' + cWin;
-            
-            // History table
-            const tbody = document.getElementById('historyBody');
-            tbody.innerHTML = '';
-            gameData.forEach((g, i) => {
-                const tr = document.createElement('tr');
-                const winner = g.joao > g.carolina ? 'João' : 'Carolina';
-                tr.innerHTML = `
-                    <td>${i + 1}</td>
-                    <td class="joao">${g.joao >= 0 ? '+' : ''}${g.joao}</td>
-                    <td class="carolina">${g.carolina >= 0 ? '+' : ''}${g.carolina}</td>
-                    <td>${winner}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-            
-            // Chart
-            renderChart();
-        }
-        
-        let chart = null;
         function renderChart() {
             const ctx = document.getElementById('scoreChart').getContext('2d');
-            
             let j = INITIAL_JOAO, c = INITIAL_CAROLINA;
             const labels = ['Início'];
             const jData = [j], cData = [c];
-            
             gameData.forEach((g, i) => {
-                j += g.joao;
-                c += g.carolina;
+                j += g.joao; c += g.carolina;
                 labels.push('Jogo ' + (i + 1));
-                jData.push(j);
-                cData.push(c);
+                jData.push(j); cData.push(c);
             });
             
-            console.log('Chart data:', { labels, jData, cData });
-            
-            if (chart) chart.destroy();
-            
-            chart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: labels,
@@ -305,15 +264,16 @@
             const c = parseInt(document.getElementById('carolinaPoints').value);
             if (!isNaN(j) && !isNaN(c)) {
                 gameData.push({ joao: j, carolina: c });
-                render();
+                const totals = getTotals();
+                document.getElementById('joaoScore').textContent = totals.joao.toLocaleString();
+                document.getElementById('carolinaScore').textContent = totals.carolina.toLocaleString();
+                document.getElementById('totalGames').textContent = gameData.length;
                 document.getElementById('joaoPoints').value = '';
                 document.getElementById('carolinaPoints').value = '';
             }
         });
         
-        // Start
-        console.log('Rendering...');
-        render();
+        renderChart();
     </script>
 </body>
 </html>
