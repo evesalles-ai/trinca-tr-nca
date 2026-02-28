@@ -4,24 +4,440 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trinca TR NCA</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
         }
         h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .scores {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        .score-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 20px 40px;
+            text-align: center;
+            min-width: 200px;
+        }
+        .score-card.joao {
+            border: 3px solid #00d9ff;
+        }
+        .score-card.carolina {
+            border: 3px solid #ff6b6b;
+        }
+        .score-card h2 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: #aaa;
+        }
+        .score-card .score {
             font-size: 3rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        .score-card.joao .score { color: #00d9ff; }
+        .score-card.carolina .score { color: #ff6b6b; }
+        .difference {
+            font-size: 1.2rem;
+            margin-top: 5px;
+        }
+        .difference.joao { color: #00d9ff; }
+        .difference.carolina { color: #ff6b6b; }
+        
+        .add-game {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .add-game h3 {
+            margin-bottom: 15px;
+        }
+        .add-game form {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .add-game input {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
+            background: #222;
+            color: white;
+            font-size: 1.1rem;
+            width: 150px;
+        }
+        .add-game button {
+            padding: 12px 30px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            color: #1a1a2e;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .add-game button:hover {
+            transform: scale(1.05);
+        }
+        
+        .chart-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .chart-container h3 {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card h4 {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        .stat-card .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .stat-card .value.win { color: #00ff88; }
+        .stat-card .value.loss { color: #ff6b6b; }
+        .stat-card .value.games { color: #ffd93d; }
+        
+        .history {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        .history h3 {
+            margin-bottom: 15px;
+        }
+        .history table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .history th, .history td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+        .history th {
+            color: #888;
+        }
+        .history .joao { color: #00d9ff; }
+        .history .carolina { color: #ff6b6b; }
+        .history .winner-joao { background: rgba(0,217,255,0.1); }
+        .history .winner-carolina { background: rgba(255,107,107,0.1); }
+        
+        .clear-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid #ff4444;
+            background: transparent;
+            color: #ff4444;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <h1>Hello World! 🚀</h1>
+    <div class="container">
+        <h1>🎯 Trinca TR NCA</h1>
+        <p class="subtitle">João vs Carolina - Scoreboard</p>
+        
+        <div class="scores">
+            <div class="score-card joao">
+                <h2>João</h2>
+                <div class="score" id="joaoScore">0</div>
+                <div class="difference joao" id="joaoDiff"></div>
+            </div>
+            <div class="score-card carolina">
+                <h2>Carolina</h2>
+                <div class="score" id="carolinaScore">0</div>
+                <div class="difference carolina" id="carolinaDiff"></div>
+            </div>
+        </div>
+        
+        <div class="add-game">
+            <h3>➕ Adicionar Jogo</h3>
+            <form id="addGameForm">
+                <input type="number" id="joaoPoints" placeholder="Pontos João" required>
+                <input type="number" id="carolinaPoints" placeholder="Pontos Carolina" required>
+                <button type="submit">Adicionar</button>
+            </form>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <h4>Total de Jogos</h4>
+                <div class="value games" id="totalGames">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Maior Vitória (João)</h4>
+                <div class="value win" id="joaoBiggestWin">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Maior Vitória (Carolina)</h4>
+                <div class="value win" id="carolinaBiggestWin">0</div>
+            </div>
+            <div class="stat-card">
+                <h4>Quem Vai Ganhar?</h4>
+                <div class="value" id="whoWinning" style="font-size: 1.2rem;">-</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>📈 Evolução ao Longo do Tempo</h3>
+            <canvas id="scoreChart"></canvas>
+        </div>
+        
+        <div class="history">
+            <h3>📋 Histórico de Jogos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>João</th>
+                        <th>Carolina</th>
+                        <th>Vencedor</th>
+                    </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+            <button class="clear-btn" onclick="clearAllData()">🗑️ Limpar Tudo</button>
+        </div>
+    </div>
+    
+    <script>
+        // Initial data
+        const initialData = [
+            { joao: 14730, carolina: 16800 },
+            { joao: 760, carolina: 1200 },
+            { joao: 15490, carolina: 18000 },
+            { joao: 640, carolina: 50 },
+            { joao: 16130, carolina: 18050 },
+            { joao: 1250, carolina: 690 },
+            { joao: 17380, carolina: 18740 },
+            { joao: -350, carolina: 470 },
+            { joao: 17030, carolina: 19210 },
+            { joao: 1050, carolina: 1150 },
+            { joao: 18080, carolina: 20360 },
+            { joao: 290, carolina: 690 },
+            { joao: 18370, carolina: 21050 },
+            { joao: 600, carolina: 1100 },
+            { joao: 18970, carolina: 22150 },
+            { joao: 240, carolina: 880 },
+            { joao: 19210, carolina: 23030 },
+            { joao: 1200, carolina: 690 },
+            { joao: 20410, carolina: 23720 },
+            { joao: 260, carolina: 630 },
+            { joao: 20630, carolina: 24350 },
+            { joao: 680, carolina: -330 },
+            { joao: 21310, carolina: 24020 },
+            { joao: 1120, carolina: 750 },
+            { joao: 22430, carolina: 24770 },
+            { joao: 870, carolina: 650 },
+            { joao: 23300, carolina: 25420 },
+        ];
+        
+        let games = JSON.parse(localStorage.getItem('trincaGames')) || initialData;
+        
+        function saveGames() {
+            localStorage.setItem('trincaGames', JSON.stringify(games));
+        }
+        
+        function calculateTotals() {
+            let joaoTotal = 0, carolinaTotal = 0;
+            games.forEach(game => {
+                joaoTotal += game.joao;
+                carolinaTotal += game.carolina;
+            });
+            return { joao: joaoTotal, carolina: carolinaTotal };
+        }
+        
+        function updateDisplay() {
+            const totals = calculateTotals();
+            
+            document.getElementById('joaoScore').textContent = totals.joao.toLocaleString();
+            document.getElementById('carolinaScore').textContent = totals.carolina.toLocaleString();
+            
+            const diff = totals.joao - totals.carolina;
+            document.getElementById('joaoDiff').textContent = diff > 0 ? `+${diff}` : diff;
+            document.getElementById('joaoDiff').style.display = diff !== 0 ? 'block' : 'none';
+            document.getElementById('carolinaDiff').textContent = diff < 0 ? `${diff}` : diff;
+            document.getElementById('carolinaDiff').style.display = diff !== 0 ? 'block' : 'none';
+            
+            document.getElementById('totalGames').textContent = games.length - 1;
+            
+            // Calculate biggest wins (only from actual games, not initial totals)
+            let joaoBiggestWin = 0, carolinaBiggestWin = 0;
+            for (let i = 1; i < games.length; i++) {
+                const joaoScore = games[i].joao;
+                const carolinaScore = games[i].carolina;
+                if (joaoScore > carolinaScore && joaoScore - carolinaScore > joaoBiggestWin) {
+                    joaoBiggestWin = joaoScore - carolinaScore;
+                }
+                if (carolinaScore > joaoScore && carolinaScore - joaoScore > carolinaBiggestWin) {
+                    carolinaBiggestWin = carolinaScore - joaoScore;
+                }
+            }
+            document.getElementById('joaoBiggestWin').textContent = joaoBiggestWin.toLocaleString();
+            document.getElementById('carolinaBiggestWin').textContent = carolinaBiggestWin.toLocaleString();
+            
+            if (diff > 0) {
+                document.getElementById('whoWinning').textContent = 'João vai ganhar! 🏆';
+                document.getElementById('whoWinning').style.color = '#00d9ff';
+            } else if (diff < 0) {
+                document.getElementById('whoWinning').textContent = 'Carolina vai ganhar! 🏆';
+                document.getElementById('whoWinning').style.color = '#ff6b6b';
+            }
+            
+            // History table
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            for (let i = games.length - 1; i > 0; i--) {
+                const row = document.createElement('tr');
+                const winner = games[i].joao > games[i].carolina ? 'João' : 'Carolina';
+                const winnerClass = games[i].joao > games[i].carolina ? 'winner-joao' : 'winner-carolina';
+                row.className = winnerClass;
+                row.innerHTML = `
+                    <td>${i}</td>
+                    <td class="joao">+${games[i].joao}</td>
+                    <td class="carolina">+${games[i].carolina}</td>
+                    <td>${winner}</td>
+                `;
+                tbody.appendChild(row);
+            }
+            
+            updateChart();
+        }
+        
+        let chart;
+        function updateChart() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            let joaoRunning = 0, carolinaRunning = 0;
+            const labels = ['Inicio'];
+            const joaoData = [games[0].joao];
+            const carolinaData = [games[0].carolina];
+            
+            for (let i = 1; i < games.length; i++) {
+                joaoRunning += games[i].joao;
+                carolinaRunning += games[i].carolina;
+                labels.push(`Jogo ${i}`);
+                joaoData.push(joaoRunning);
+                carolinaData.push(carinaRunning);
+            }
+            
+            if (chart) chart.destroy();
+            
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'João',
+                            data: joaoData,
+                            borderColor: '#00d9ff',
+                            backgroundColor: 'rgba(0,217,255,0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Carolina',
+                            data: carolinaData,
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255,107,107,0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            labels: { color: 'white' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        },
+                        y: {
+                            ticks: { color: '#888' },
+                            grid: { color: '#333' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('addGameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const joaoPoints = parseInt(document.getElementById('joaoPoints').value);
+            const carolinaPoints = parseInt(document.getElementById('carolinaPoints').value);
+            
+            games.push({ joao: joaoPoints, carolina: carolinaPoints });
+            saveGames();
+            updateDisplay();
+            
+            document.getElementById('joaoPoints').value = '';
+            document.getElementById('carolinaPoints').value = '';
+        });
+        
+        function clearAllData() {
+            if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                games = [games[0]]; // Keep initial
+                saveGames();
+                updateDisplay();
+            }
+        }
+        
+        updateDisplay();
+    </script>
 </body>
 </html>
