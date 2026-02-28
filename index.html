@@ -4,13 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trinca TR NCA</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
@@ -18,10 +14,7 @@
             color: white;
             padding: 20px;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
         h1 {
             text-align: center;
             font-size: 2.5rem;
@@ -30,11 +23,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            margin-bottom: 30px;
-        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
         .scores {
             display: flex;
             justify-content: center;
@@ -51,12 +40,8 @@
             flex: 1;
             max-width: 400px;
         }
-        .score-card.joao {
-            border: 3px solid #00d9ff;
-        }
-        .score-card.carolina {
-            border: 3px solid #ff6b6b;
-        }
+        .score-card.joao { border: 3px solid #00d9ff; }
+        .score-card.carolina { border: 3px solid #ff6b6b; }
         .score-card h2 {
             font-size: 1.2rem;
             margin-bottom: 10px;
@@ -72,11 +57,7 @@
         }
         .score-card.joao .score { color: #00d9ff; }
         .score-card.carolina .score { color: #ff6b6b; }
-        .difference {
-            font-size: 1.2rem;
-            margin-top: 8px;
-            font-weight: bold;
-        }
+        .difference { font-size: 1.2rem; margin-top: 8px; font-weight: bold; }
         .difference.joao { color: #00d9ff; }
         .difference.carolina { color: #ff6b6b; }
         
@@ -86,10 +67,7 @@
             padding: 25px;
             margin-bottom: 30px;
         }
-        .add-game h3 {
-            margin-bottom: 15px;
-            text-align: center;
-        }
+        .add-game h3 { margin-bottom: 15px; text-align: center; }
         .add-game form {
             display: flex;
             gap: 15px;
@@ -107,10 +85,7 @@
             width: 180px;
             text-align: center;
         }
-        .add-game input::placeholder {
-            color: #666;
-            font-size: 1rem;
-        }
+        .add-game input::placeholder { color: #666; font-size: 1rem; }
         .add-game button {
             padding: 15px 35px;
             border-radius: 10px;
@@ -122,20 +97,16 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .add-game button:hover {
-            transform: scale(1.05);
-        }
+        .add-game button:hover { transform: scale(1.05); }
         
         .chart-container {
             background: rgba(255,255,255,0.05);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 30px;
+            min-height: 400px;
         }
-        .chart-container h3 {
-            margin-bottom: 15px;
-            text-align: center;
-        }
+        .chart-container h3 { margin-bottom: 15px; text-align: center; }
         
         .stats {
             display: grid;
@@ -156,12 +127,8 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .stat-card .value {
-            font-size: 1.4rem;
-            font-weight: bold;
-        }
+        .stat-card .value { font-size: 1.4rem; font-weight: bold; }
         .stat-card .value.win { color: #00ff88; }
-        .stat-card .value.loss { color: #ff6b6b; }
         .stat-card .value.games { color: #ffd93d; }
         
         .history {
@@ -169,26 +136,15 @@
             border-radius: 15px;
             padding: 20px;
         }
-        .history h3 {
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        .history table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+        .history h3 { margin-bottom: 15px; text-align: center; }
+        .history table { width: 100%; border-collapse: collapse; }
         .history th, .history td {
             padding: 12px 8px;
             text-align: center;
             border-bottom: 1px solid #333;
             font-size: 0.95rem;
         }
-        .history th {
-            color: #888;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
+        .history th { color: #888; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
         .history .joao { color: #00d9ff; font-weight: bold; }
         .history .carolina { color: #ff6b6b; font-weight: bold; }
         .history .winner-joao { background: rgba(0,217,255,0.15); }
@@ -260,55 +216,35 @@
             <h3>📋 Histórico de Jogos</h3>
             <table>
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>João</th>
-                        <th>Carolina</th>
-                        <th>Vencedor</th>
-                    </tr>
+                    <tr><th>#</th><th>João</th><th>Carolina</th><th>Vencedor</th></tr>
                 </thead>
                 <tbody id="historyBody"></tbody>
             </table>
-            <button class="clear-btn" onclick="clearAllData()">🗑️ Limpar Tudo</button>
+            <button class="clear-btn" onclick="resetData()">🗑️ Resetar Dados</button>
         </div>
     </div>
     
     <script>
-        // Initial data - alternating: total, then game score
-        // João: 14730(total), +760, 15490(total), +640, 16130(total), +1250...
+        // Raw data: alternating total / game score
         const rawJoao = [14730, 760, 15490, 640, 16130, 1250, 17380, -350, 17030, 1050, 18080, 290, 18370, 600, 18970, 240, 19210, 1200, 20410, 260, 20630, 680, 21310, 1120, 22430, 870, 23300];
         const rawCarolina = [16800, 1200, 18000, 50, 18050, 690, 18740, 470, 19210, 1150, 20360, 690, 21050, 1100, 22150, 880, 23030, 690, 23720, 630, 24350, -330, 24020, 750, 24770, 650, 25420];
         
-        // Extract just the game scores (the +xxx values, not the totals)
-        // Every other value starting from index 1 is the game score
-        let games = JSON.parse(localStorage.getItem('trincaGames'));
+        const INITIAL_JOAO = rawJoao[0];
+        const INITIAL_CAROLINA = rawCarolina[0];
         
-        if (!games) {
-            games = [];
-            for (let i = 1; i < rawJoao.length; i += 2) {
-                games.push({
-                    joao: rawJoao[i],
-                    carolina: rawCarolina[i]
-                });
-            }
-        }
-        
-        const INITIAL_JOAO = rawJoao[0]; // 14730
-        const INITIAL_CAROLINA = rawCarolina[0]; // 16800
-        
-        function saveGames() {
-            localStorage.setItem('trincaGames', JSON.stringify(games));
+        // Parse games from alternating data
+        let games = [];
+        for (let i = 1; i < rawJoao.length; i += 2) {
+            games.push({ joao: rawJoao[i], carolina: rawCarolina[i] });
         }
         
         function calculateTotals() {
             let joaoTotal = INITIAL_JOAO;
             let carolinaTotal = INITIAL_CAROLINA;
-            
             games.forEach(game => {
                 joaoTotal += game.joao;
                 carolinaTotal += game.carolina;
             });
-            
             return { joao: joaoTotal, carolina: carolinaTotal };
         }
         
@@ -334,7 +270,6 @@
             
             document.getElementById('totalGames').textContent = games.length;
             
-            // Calculate biggest wins
             let joaoBiggestWin = 0, carolinaBiggestWin = 0;
             games.forEach(game => {
                 if (game.joao > game.carolina && game.joao - game.carolina > joaoBiggestWin) {
@@ -355,7 +290,6 @@
                 document.getElementById('whoWinning').style.color = '#ff6b6b';
             }
             
-            // History table
             const tbody = document.getElementById('historyBody');
             tbody.innerHTML = '';
             games.forEach((game, i) => {
@@ -363,12 +297,10 @@
                 const winner = game.joao > game.carolina ? 'João' : (game.carolina > game.joao ? 'Carolina' : 'Empate');
                 const winnerClass = game.joao > game.carolina ? 'winner-joao' : (game.carolina > game.joao ? 'winner-carolina' : '');
                 row.className = winnerClass;
-                const joaoSign = game.joao >= 0 ? '+' : '';
-                const carolinaSign = game.carolina >= 0 ? '+' : '';
                 row.innerHTML = `
                     <td>${i + 1}</td>
-                    <td class="joao">${joaoSign}${game.joao.toLocaleString('pt-BR')}</td>
-                    <td class="carolina">${carolinaSign}${game.carolina.toLocaleString('pt-BR')}</td>
+                    <td class="joao">${game.joao >= 0 ? '+' : ''}${game.joao.toLocaleString('pt-BR')}</td>
+                    <td class="carolina">${game.carolina >= 0 ? '+' : ''}${game.carolina.toLocaleString('pt-BR')}</td>
                     <td>${winner}</td>
                 `;
                 tbody.appendChild(row);
@@ -377,10 +309,11 @@
             updateChart();
         }
         
-        let chart;
+        let chart = null;
         function updateChart() {
             const ctx = document.getElementById('scoreChart').getContext('2d');
             
+            // Build cumulative data starting from initial totals
             let joaoRunning = INITIAL_JOAO;
             let carolinaRunning = INITIAL_CAROLINA;
             
@@ -396,6 +329,8 @@
                 carolinaData.push(carinaRunning);
             });
             
+            console.log('Chart data:', { labels, joaoData, carolinaData });
+            
             if (chart) chart.destroy();
             
             chart = new Chart(ctx, {
@@ -409,9 +344,10 @@
                             borderColor: '#00d9ff',
                             backgroundColor: 'rgba(0,217,255,0.1)',
                             fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            tension: 0.3,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            borderWidth: 3
                         },
                         {
                             label: 'Carolina',
@@ -419,24 +355,19 @@
                             borderColor: '#ff6b6b',
                             backgroundColor: 'rgba(255,107,107,0.1)',
                             fill: true,
-                            tension: 0.4,
-                            pointRadius: 4,
-                            pointHoverRadius: 6
+                            tension: 0.3,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            borderWidth: 3
                         }
                     ]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             labels: { color: 'white', font: { size: 14 } }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.dataset.label + ': ' + context.parsed.y.toLocaleString('pt-BR');
-                                }
-                            }
                         }
                     },
                     scales: {
@@ -451,7 +382,8 @@
                                     return value.toLocaleString('pt-BR');
                                 }
                             },
-                            grid: { color: '#333' }
+                            grid: { color: '#333' },
+                            beginAtZero: false
                         }
                     }
                 }
@@ -465,23 +397,21 @@
             
             if (!isNaN(joaoPoints) && !isNaN(carolinaPoints)) {
                 games.push({ joao: joaoPoints, carolina: carolinaPoints });
-                saveGames();
                 updateDisplay();
-                
                 document.getElementById('joaoPoints').value = '';
                 document.getElementById('carolinaPoints').value = '';
             }
         });
         
-        function clearAllData() {
-            if (confirm('Tem certeza que deseja limpar todos os jogos?')) {
+        function resetData() {
+            if (confirm('Resetar todos os dados?')) {
                 games = [];
-                saveGames();
                 updateDisplay();
             }
         }
         
         // Initialize
+        updateChart();
         updateDisplay();
     </script>
 </body>
