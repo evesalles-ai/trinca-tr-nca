@@ -232,10 +232,18 @@
         const INITIAL_JOAO = rawJoao[0];
         const INITIAL_CAROLINA = rawCarolina[0];
         
-        // Parse games from alternating data
-        let games = [];
-        for (let i = 1; i < rawJoao.length; i += 2) {
-            games.push({ joao: rawJoao[i], carolina: rawCarolina[i] });
+        // Parse games from alternating data, or load from localStorage
+        let games = JSON.parse(localStorage.getItem('trincaGames'));
+        
+        if (!games || games.length === 0) {
+            games = [];
+            for (let i = 1; i < rawJoao.length; i += 2) {
+                games.push({ joao: rawJoao[i], carolina: rawCarolina[i] });
+            }
+        }
+        
+        function saveGames() {
+            localStorage.setItem('trincaGames', JSON.stringify(games));
         }
         
         function calculateTotals() {
@@ -397,6 +405,7 @@
             
             if (!isNaN(joaoPoints) && !isNaN(carolinaPoints)) {
                 games.push({ joao: joaoPoints, carolina: carolinaPoints });
+                saveGames();
                 updateDisplay();
                 document.getElementById('joaoPoints').value = '';
                 document.getElementById('carolinaPoints').value = '';
@@ -406,6 +415,7 @@
         function resetData() {
             if (confirm('Resetar todos os dados?')) {
                 games = [];
+                saveGames();
                 updateDisplay();
             }
         }
